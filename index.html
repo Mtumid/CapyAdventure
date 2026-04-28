@@ -1,1053 +1,1304 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Capy's Mountain Adventure 🏔️</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Nunito:wght@400;700;900&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Capy's Mountain Adventure 🏔️</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800&family=Nunito:wght@400;700;900&display=swap');
 
-:root {
-  --brown:    #c8855a;
-  --brown-dk: #8b4a25;
-  --panel:    #fdf4e7;
-  --panel-dk: #f0e0c8;
-  --text:     #3a2010;
-  --gray:     #8a7a6a;
-  --white:    #fffef8;
-}
+    :root {
+      --brown: #c8855a;
+      --brown-dk: #8b4a25;
+      --panel: #fdf4e7;
+      --panel-dk: #f0e0c8;
+      --text: #3a2010;
+      --gray: #8a7a6a;
+      --white: #fffef8;
+    }
 
-* { margin:0; padding:0; box-sizing:border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-body {
-  background: linear-gradient(160deg, #ffe8d0 0%, #ffd4b0 100%);
-  font-family: 'Baloo 2', cursive;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
+    body {
+      background: linear-gradient(160deg, #ffe8d0 0%, #ffd4b0 100%);
+      font-family: 'Baloo 2', cursive;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
 
-h1.title {
-  font-size: clamp(1.3rem, 3.5vw, 1.8rem);
-  font-weight: 800;
-  color: var(--brown-dk);
-  text-shadow: 0 2px 0 rgba(255,255,255,0.6);
-  text-align: center;
-  margin-bottom: 5px;
-}
+    h1.title {
+      font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+      font-weight: 800;
+      color: var(--brown-dk);
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.6);
+      text-align: center;
+      margin-bottom: 5px;
+    }
 
-#outer {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  width: min(1060px, 99vw);
-  padding: 6px;
-}
+    #outer {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      width: min(1060px, 99vw);
+      padding: 6px;
+    }
 
-#game-side {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+    #game-side {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
 
-#hud {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 12px;
-  background: rgba(255,255,255,0.55);
-  border-radius: 14px;
-  border: 2px solid rgba(255,255,255,0.8);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-.hud-pill {
-  font-family: 'Baloo 2', cursive;
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.hud-pill span { color: var(--brown-dk); font-weight: 800; }
+    #hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 12px;
+      background: rgba(255, 255, 255, 0.55);
+      border-radius: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
 
-#game-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
-  border-radius: 18px;
-  overflow: hidden;
-  border: 3px solid rgba(255,255,255,0.85);
-  box-shadow: 0 8px 32px rgba(139,74,37,0.18), 0 2px 0 rgba(255,255,255,0.6) inset;
-}
+    .hud-pill {
+      font-family: 'Baloo 2', cursive;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
 
-canvas#gc { width:100%; height:100%; display:block; }
+    .hud-pill span {
+      color: var(--brown-dk);
+      font-weight: 800;
+    }
 
-.screen {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,248,235,0.88);
-  border-radius: 15px;
-  z-index: 30;
-  gap: 10px;
-  backdrop-filter: blur(6px);
-}
-.screen h2 {
-  font-family: 'Baloo 2', cursive;
-  font-weight: 800;
-  font-size: clamp(1.5rem, 4.5vw, 2.2rem);
-  color: var(--brown-dk);
-  text-align: center;
-  padding: 0 20px;
-  line-height: 1.1;
-}
-.screen p {
-  font-family: 'Nunito', sans-serif;
-  font-size: clamp(0.78rem, 2.2vw, 0.92rem);
-  color: var(--gray);
-  text-align: center;
-  max-width: 360px;
-  line-height: 1.5;
-  padding: 0 16px;
-}
-.btn {
-  background: var(--brown);
-  color: white;
-  border: none;
-  border-radius: 30px;
-  padding: 10px 28px;
-  font-family: 'Baloo 2', cursive;
-  font-weight: 800;
-  font-size: 1.05rem;
-  cursor: pointer;
-  box-shadow: 0 5px 0 var(--brown-dk), 0 8px 18px rgba(139,74,37,0.25);
-  transition: transform 0.1s, box-shadow 0.1s;
-}
-.btn:hover { transform: translateY(-2px); }
-.btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--brown-dk); }
+    #game-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 3px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 8px 32px rgba(139, 74, 37, 0.18), 0 2px 0 rgba(255, 255, 255, 0.6) inset;
+    }
 
-#pops {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 20;
-}
-.pop {
-  position: absolute;
-  font-family: 'Baloo 2', cursive;
-  font-weight: 800;
-  font-size: 1.1rem;
-  color: var(--brown-dk);
-  text-shadow: 0 1px 4px rgba(255,255,255,0.8);
-  pointer-events: none;
-  animation: popFloat 0.9s ease-out forwards;
-  white-space: nowrap;
-}
-@keyframes popFloat {
-  0%   { opacity:1; transform:translateY(0) scale(1.15); }
-  100% { opacity:0; transform:translateY(-52px) scale(0.8); }
-}
+    canvas#gc {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
 
-/* ── TINKER PANEL ── */
-#tinker-panel {
-  width: 228px;
-  flex-shrink: 0;
-  background: var(--panel);
-  border-radius: 18px;
-  border: 2px solid var(--panel-dk);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  box-shadow: 0 6px 24px rgba(139,74,37,0.12);
-  max-height: min(560px, 90vh);
-  overflow-y: auto;
-}
-#tinker-panel::-webkit-scrollbar { width: 4px; }
-#tinker-panel::-webkit-scrollbar-thumb { background: var(--panel-dk); border-radius: 4px; }
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 248, 235, 0.88);
+      border-radius: 15px;
+      z-index: 30;
+      gap: 10px;
+      backdrop-filter: blur(6px);
+    }
 
-.tinker-title { font-family:'Baloo 2',cursive; font-weight:800; color:var(--brown-dk); font-size:1rem; text-align:center; }
-.tinker-subtitle { font-family:'Nunito',sans-serif; font-size:0.68rem; color:var(--gray); text-align:center; margin-top:-5px; line-height:1.4; }
+    .screen h2 {
+      font-family: 'Baloo 2', cursive;
+      font-weight: 800;
+      font-size: clamp(1.5rem, 4.5vw, 2.2rem);
+      color: var(--brown-dk);
+      text-align: center;
+      padding: 0 20px;
+      line-height: 1.1;
+    }
 
-.tinker-section { background:rgba(255,255,255,0.6); border-radius:11px; padding:8px 10px; border:1.5px solid var(--panel-dk); }
-.section-label { font-family:'Baloo 2',cursive; font-weight:700; font-size:0.72rem; color:var(--brown); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
+    .screen p {
+      font-family: 'Nunito', sans-serif;
+      font-size: clamp(0.78rem, 2.2vw, 0.92rem);
+      color: var(--gray);
+      text-align: center;
+      max-width: 360px;
+      line-height: 1.5;
+      padding: 0 16px;
+    }
 
-.var-row { margin-bottom: 8px; }
-.var-name { font-family:'Nunito',monospace; font-size:0.71rem; color:var(--brown-dk); font-weight:700; }
-.var-comment { font-family:'Nunito',sans-serif; font-size:0.63rem; color:var(--gray); margin-bottom:3px; line-height:1.3; }
-.var-comment em { color:#a08060; font-style:normal; }
+    .btn {
+      background: var(--brown);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 10px 28px;
+      font-family: 'Baloo 2', cursive;
+      font-weight: 800;
+      font-size: 1.05rem;
+      cursor: pointer;
+      box-shadow: 0 5px 0 var(--brown-dk), 0 8px 18px rgba(139, 74, 37, 0.25);
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
 
-.slider-wrap { display:flex; align-items:center; gap:6px; }
-input[type=range] { flex:1; -webkit-appearance:none; height:5px; border-radius:3px; background:var(--panel-dk); outline:none; }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:var(--brown); cursor:pointer; box-shadow:0 1px 4px rgba(139,74,37,0.4); }
-.val-badge { font-family:'Baloo 2',cursive; font-weight:700; font-size:0.78rem; color:var(--text); background:var(--panel-dk); border-radius:6px; padding:1px 6px; min-width:30px; text-align:center; }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
 
-.toggle-wrap { display:flex; align-items:center; gap:8px; }
-.toggle { position:relative; width:36px; height:20px; }
-.toggle input { opacity:0; width:0; height:0; }
-.toggle-slider { position:absolute; inset:0; background:var(--panel-dk); border-radius:20px; cursor:pointer; transition:0.3s; }
-.toggle input:checked + .toggle-slider { background:var(--brown); }
-.toggle-slider::before { content:''; position:absolute; width:14px; height:14px; left:3px; top:3px; background:white; border-radius:50%; transition:0.3s; }
-.toggle input:checked + .toggle-slider::before { transform:translateX(16px); }
-.toggle-label { font-family:'Nunito',sans-serif; font-size:0.72rem; color:var(--text); }
+    .btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 var(--brown-dk);
+    }
 
-input[type=text].name-input { background:white; border:1.5px solid var(--panel-dk); border-radius:8px; color:var(--text); font-family:'Nunito',sans-serif; font-size:0.8rem; padding:4px 8px; width:100%; outline:none; transition:border-color 0.2s; }
-input[type=text].name-input:focus { border-color:var(--brown); }
+    #pops {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 20;
+    }
 
-.apply-btn { background:var(--brown); color:white; border:none; border-radius:12px; padding:9px; font-family:'Baloo 2',cursive; font-weight:800; font-size:0.92rem; cursor:pointer; width:100%; box-shadow:0 4px 0 var(--brown-dk); transition:transform 0.1s; }
-.apply-btn:hover { transform:translateY(-1px); }
-.apply-btn:active { transform:translateY(3px); box-shadow:0 1px 0 var(--brown-dk); }
+    .pop {
+      position: absolute;
+      font-family: 'Baloo 2', cursive;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--brown-dk);
+      text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
+      pointer-events: none;
+      animation: popFloat 0.9s ease-out forwards;
+      white-space: nowrap;
+    }
 
-.code-hint { font-family:'Nunito',sans-serif; font-size:0.61rem; color:var(--gray); text-align:center; line-height:1.4; }
+    @keyframes popFloat {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1.15);
+      }
 
-@media (max-width: 620px) {
-  #outer { flex-direction: column; }
-  #tinker-panel { width:100%; max-height:260px; }
-}
-</style>
+      100% {
+        opacity: 0;
+        transform: translateY(-52px) scale(0.8);
+      }
+    }
+
+    /* ── TINKER PANEL ── */
+    #tinker-panel {
+      width: 228px;
+      flex-shrink: 0;
+      background: var(--panel);
+      border-radius: 18px;
+      border: 2px solid var(--panel-dk);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      box-shadow: 0 6px 24px rgba(139, 74, 37, 0.12);
+      max-height: min(560px, 90vh);
+      overflow-y: auto;
+    }
+
+    #tinker-panel::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    #tinker-panel::-webkit-scrollbar-thumb {
+      background: var(--panel-dk);
+      border-radius: 4px;
+    }
+
+    .tinker-title {
+      font-family: 'Baloo 2', cursive;
+      font-weight: 800;
+      color: var(--brown-dk);
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .tinker-subtitle {
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.68rem;
+      color: var(--gray);
+      text-align: center;
+      margin-top: -5px;
+      line-height: 1.4;
+    }
+
+    .tinker-section {
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 11px;
+      padding: 8px 10px;
+      border: 1.5px solid var(--panel-dk);
+    }
+
+    .section-label {
+      font-family: 'Baloo 2', cursive;
+      font-weight: 700;
+      font-size: 0.72rem;
+      color: var(--brown);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+    }
+
+    .var-row {
+      margin-bottom: 8px;
+    }
+
+    .var-name {
+      font-family: 'Nunito', monospace;
+      font-size: 0.71rem;
+      color: var(--brown-dk);
+      font-weight: 700;
+    }
+
+    .var-comment {
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.63rem;
+      color: var(--gray);
+      margin-bottom: 3px;
+      line-height: 1.3;
+    }
+
+    .var-comment em {
+      color: #a08060;
+      font-style: normal;
+    }
+
+    .slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    input[type=range] {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 5px;
+      border-radius: 3px;
+      background: var(--panel-dk);
+      outline: none;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--brown);
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(139, 74, 37, 0.4);
+    }
+
+    .val-badge {
+      font-family: 'Baloo 2', cursive;
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: var(--text);
+      background: var(--panel-dk);
+      border-radius: 6px;
+      padding: 1px 6px;
+      min-width: 30px;
+      text-align: center;
+    }
+
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toggle {
+      position: relative;
+      width: 36px;
+      height: 20px;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--panel-dk);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .toggle input:checked+.toggle-slider {
+      background: var(--brown);
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    .toggle input:checked+.toggle-slider::before {
+      transform: translateX(16px);
+    }
+
+    .toggle-label {
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.72rem;
+      color: var(--text);
+    }
+
+    input[type=text].name-input {
+      background: white;
+      border: 1.5px solid var(--panel-dk);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type=text].name-input:focus {
+      border-color: var(--brown);
+    }
+
+    .apply-btn {
+      background: var(--brown);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 9px;
+      font-family: 'Baloo 2', cursive;
+      font-weight: 800;
+      font-size: 0.92rem;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 4px 0 var(--brown-dk);
+      transition: transform 0.1s;
+    }
+
+    .apply-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .apply-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 var(--brown-dk);
+    }
+
+    .code-hint {
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.61rem;
+      color: var(--gray);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 620px) {
+      #outer {
+        flex-direction: column;
+      }
+
+      #tinker-panel {
+        width: 100%;
+        max-height: 260px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div id="outer">
-  <div id="game-side">
-    <h1 class="title">🏔️ Capy's Mountain Adventure</h1>
-    <div id="hud">
-      <div class="hud-pill">⭐ <span id="score-el">0</span></div>
-      <div class="hud-pill">🎴 <span id="stk-el">0</span>/<span id="stk-tot">0</span></div>
-      <div class="hud-pill" id="lives-hud">❤️❤️❤️</div>
-      <div class="hud-pill">📏 <span id="dist-el">0</span>m</div>
+  <div id="outer">
+    <div id="game-side">
+      <h1 class="title">🏔️ Capy's Mountain Adventure</h1>
+      <div id="hud">
+        <div class="hud-pill">⭐ <span id="score-el">0</span></div>
+        <div class="hud-pill">🎴 <span id="stk-el">0</span>/<span id="stk-tot">0</span></div>
+        <div class="hud-pill" id="lives-hud">❤️❤️❤️</div>
+        <div class="hud-pill">📏 <span id="dist-el">0</span>m</div>
+      </div>
+      <div id="game-wrap">
+        <canvas id="gc"></canvas>
+        <div id="pops"></div>
+        <div class="screen" id="screen-start">
+          <h2>🦫 Capy's<br>Mountain Adventure!</h2>
+          <p>Help Capy cross the snowy mountains and reach the finish flag!<br><br>
+            <strong style="color:var(--brown-dk)">Click / Tap / Space</strong> to jump<br>
+            <strong style="color:var(--brown-dk)">Jump again in the air</strong> for a double jump 🌟<br><br>
+            Watch out for glowing 🦙 alpacas!<br>
+            Stickers are always on safe ground — no tricks!
+          </p>
+          <button class="btn" id="btn-start">Let's Go! 🐾</button>
+        </div>
+        <div class="screen" id="screen-end" style="display:none">
+          <h2 id="end-title"></h2>
+          <p id="end-msg"></p>
+          <button class="btn" id="btn-restart">Play Again 🐾</button>
+        </div>
+      </div>
     </div>
-    <div id="game-wrap">
-      <canvas id="gc"></canvas>
-      <div id="pops"></div>
-      <div class="screen" id="screen-start">
-        <h2>🦫 Capy's<br>Mountain Adventure!</h2>
-        <p>Help Capy cross the snowy mountains and reach the finish flag!<br><br>
-          <strong style="color:var(--brown-dk)">Click / Tap / Space</strong> to jump<br>
-          <strong style="color:var(--brown-dk)">Jump again in the air</strong> for a double jump 🌟<br><br>
-          Watch out for glowing 🦙 alpacas!<br>
-          Stickers are always on safe ground — no tricks!</p>
-        <button class="btn" id="btn-start">Let's Go! 🐾</button>
+
+    <div id="tinker-panel">
+      <div class="tinker-title">🔧 Tinker Mode</div>
+      <div class="tinker-subtitle">Real code variables! Change them and hit Apply.</div>
+
+      <div class="tinker-section">
+        <div class="section-label">🦫 Character</div>
+        <div class="var-row">
+          <div class="var-name">CAPY_COLOR</div>
+          <div class="var-comment"><em>// Fur colour. Try "#ff8fa8" (pink), "#a0c8f0" (blue)</em></div>
+          <input type="text" class="name-input" id="t-color" value="#c8855a" maxlength="22">
+        </div>
       </div>
-      <div class="screen" id="screen-end" style="display:none">
-        <h2 id="end-title"></h2>
-        <p id="end-msg"></p>
-        <button class="btn" id="btn-restart">Play Again 🐾</button>
+
+      <div class="tinker-section">
+        <div class="section-label">🎮 Movement</div>
+        <div class="var-row">
+          <div class="var-name">JUMP_FORCE</div>
+          <div class="var-comment"><em>// How high Capy jumps. capy.vy = -JUMP_FORCE (negative = up!). Try 8 (tiny) or
+              16 (huge).</em></div>
+          <div class="slider-wrap">
+            <input type="range" id="t-jump" min="7" max="16" value="13" step="0.5">
+            <div class="val-badge" id="t-jump-val">13</div>
+          </div>
+        </div>
+        <div class="var-row">
+          <div class="var-name">SCROLL_SPEED</div>
+          <div class="var-comment"><em>// Constant world scroll (px/frame). Capy rides this like a conveyor belt.</em>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" id="t-speed" min="0.5" max="4" value="1.8" step="0.1">
+            <div class="val-badge" id="t-speed-val">1.8</div>
+          </div>
+        </div>
+        <div class="var-row">
+          <div class="var-name">GRAVITY</div>
+          <div class="var-comment"><em>// Downward pull each frame. Low = floaty moon. High = heavy boots.</em></div>
+          <div class="slider-wrap">
+            <input type="range" id="t-gravity" min="0.15" max="1.0" value="0.38" step="0.05">
+            <div class="val-badge" id="t-gravity-val">0.38</div>
+          </div>
+        </div>
+        <div class="var-row">
+          <div class="var-name">DOUBLE_JUMP</div>
+          <div class="var-comment"><em>// true = second jump allowed mid-air. A "feature flag"!</em></div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="t-doublejump" checked><span
+                class="toggle-slider"></span></label>
+            <span class="toggle-label">enabled (true)</span>
+          </div>
+        </div>
       </div>
+
+      <div class="tinker-section">
+        <div class="section-label">❤️ Lives & Scoring</div>
+        <div class="var-row">
+          <div class="var-name">LIVES</div>
+          <div class="var-comment"><em>// Starting lives. Press Play Again to apply.</em></div>
+          <div class="slider-wrap">
+            <input type="range" id="t-lives" min="1" max="9" value="3" step="1">
+            <div class="val-badge" id="t-lives-val">3</div>
+          </div>
+        </div>
+        <div class="var-row">
+          <div class="var-name">STICKER_SCORE</div>
+          <div class="var-comment"><em>// score += STICKER_SCORE each collect.</em></div>
+          <div class="slider-wrap">
+            <input type="range" id="t-stkscore" min="5" max="200" value="20" step="5">
+            <div class="val-badge" id="t-stkscore-val">20</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tinker-section">
+        <div class="section-label">🦙 Alpaca Hazards</div>
+        <div class="var-row">
+          <div class="var-name">ALPACA_SPEED</div>
+          <div class="var-comment"><em>// Patrol speed (px/frame). 0 = frozen. 3 = zippy!</em></div>
+          <div class="slider-wrap">
+            <input type="range" id="t-alpaca" min="0" max="3" value="0.9" step="0.1">
+            <div class="val-badge" id="t-alpaca-val">0.9</div>
+          </div>
+        </div>
+        <div class="var-row">
+          <div class="var-name">HIT_RADIUS</div>
+          <div class="var-comment"><em>// Collision distance (px). Bigger = harder. Smaller = pixel-perfect.</em></div>
+          <div class="slider-wrap">
+            <input type="range" id="t-hitrad" min="6" max="40" value="20" step="1">
+            <div class="val-badge" id="t-hitrad-val">20</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tinker-section">
+        <div class="section-label">🧪 Advanced</div>
+        <div class="var-row">
+          <div class="var-name">CAMERA_LAG</div>
+          <div class="var-comment"><em>// camX += gap × CAMERA_LAG each frame. 0.05 = silky. 1.0 = instant snap.</em>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" id="t-camlag" min="0.02" max="1.0" value="0.07" step="0.02">
+            <div class="val-badge" id="t-camlag-val">0.07</div>
+          </div>
+        </div>
+        <div class="var-row">
+          <div class="var-name">SQUISH_AMOUNT</div>
+          <div class="var-comment"><em>// Landing squash scale. 1.0 = no squish. 0.5 = pancake Capy.</em></div>
+          <div class="slider-wrap">
+            <input type="range" id="t-squish" min="0.5" max="1.0" value="0.68" step="0.05">
+            <div class="val-badge" id="t-squish-val">0.68</div>
+          </div>
+        </div>
+        <div class="var-row">
+          <div class="var-name">SNOW_COUNT</div>
+          <div class="var-comment"><em>// Snowflakes. 0 = clear day. 120 = blizzard!</em></div>
+          <div class="slider-wrap">
+            <input type="range" id="t-snow" min="0" max="120" value="35" step="5">
+            <div class="val-badge" id="t-snow-val">35</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="apply-btn" id="btn-apply">🐾 Apply Changes</button>
+      <div class="code-hint">💡 These are real JS variables! Search for "TINKERABLE VARIABLES" in the source to find
+        them. 🧑‍💻</div>
     </div>
   </div>
 
-  <div id="tinker-panel">
-    <div class="tinker-title">🔧 Tinker Mode</div>
-    <div class="tinker-subtitle">Real code variables! Change them and hit Apply.</div>
+  <script>
+    // ═══════════════════════════════════════════════════
+    //   CAPY'S MOUNTAIN ADVENTURE v4.2 — polish upgrade
+    // ═══════════════════════════════════════════════════
 
-    <div class="tinker-section">
-      <div class="section-label">🦫 Character</div>
-      <div class="var-row">
-        <div class="var-name">CAPY_COLOR</div>
-        <div class="var-comment"><em>// Fur colour. Try "#ff8fa8" (pink), "#a0c8f0" (blue)</em></div>
-        <input type="text" class="name-input" id="t-color" value="#c8855a" maxlength="22">
-      </div>
-    </div>
+    // ── NEW: small UX polish layer (non-invasive) ─────────
 
-    <div class="tinker-section">
-      <div class="section-label">🎮 Movement</div>
-      <div class="var-row">
-        <div class="var-name">JUMP_FORCE</div>
-        <div class="var-comment"><em>// How high Capy jumps. capy.vy = -JUMP_FORCE (negative = up!). Try 8 (tiny) or 16 (huge).</em></div>
-        <div class="slider-wrap">
-          <input type="range" id="t-jump" min="7" max="16" value="13" step="0.5">
-          <div class="val-badge" id="t-jump-val">13</div>
-        </div>
-      </div>
-      <div class="var-row">
-        <div class="var-name">SCROLL_SPEED</div>
-        <div class="var-comment"><em>// Constant world scroll (px/frame). Capy rides this like a conveyor belt.</em></div>
-        <div class="slider-wrap">
-          <input type="range" id="t-speed" min="0.5" max="4" value="1.8" step="0.1">
-          <div class="val-badge" id="t-speed-val">1.8</div>
-        </div>
-      </div>
-      <div class="var-row">
-        <div class="var-name">GRAVITY</div>
-        <div class="var-comment"><em>// Downward pull each frame. Low = floaty moon. High = heavy boots.</em></div>
-        <div class="slider-wrap">
-          <input type="range" id="t-gravity" min="0.15" max="1.0" value="0.38" step="0.05">
-          <div class="val-badge" id="t-gravity-val">0.38</div>
-        </div>
-      </div>
-      <div class="var-row">
-        <div class="var-name">DOUBLE_JUMP</div>
-        <div class="var-comment"><em>// true = second jump allowed mid-air. A "feature flag"!</em></div>
-        <div class="toggle-wrap">
-          <label class="toggle"><input type="checkbox" id="t-doublejump" checked><span class="toggle-slider"></span></label>
-          <span class="toggle-label">enabled (true)</span>
-        </div>
-      </div>
-    </div>
+    // subtle screen shake on damage
+    let shake = 0;
+    function applyShake() {
+      if (shake > 0) {
+        shake--;
+        ctx.translate((Math.random() - 0.5) * 6, (Math.random() - 0.5) * 6);
+      }
+    }
 
-    <div class="tinker-section">
-      <div class="section-label">❤️ Lives & Scoring</div>
-      <div class="var-row">
-        <div class="var-name">LIVES</div>
-        <div class="var-comment"><em>// Starting lives. Press Play Again to apply.</em></div>
-        <div class="slider-wrap">
-          <input type="range" id="t-lives" min="1" max="9" value="3" step="1">
-          <div class="val-badge" id="t-lives-val">3</div>
-        </div>
-      </div>
-      <div class="var-row">
-        <div class="var-name">STICKER_SCORE</div>
-        <div class="var-comment"><em>// score += STICKER_SCORE each collect.</em></div>
-        <div class="slider-wrap">
-          <input type="range" id="t-stkscore" min="5" max="200" value="20" step="5">
-          <div class="val-badge" id="t-stkscore-val">20</div>
-        </div>
-      </div>
-    </div>
+    // improve jump feel (tiny coyote time + jump buffer)
+    let coyoteTimer = 0;
+    let jumpBuffer = 0;
 
-    <div class="tinker-section">
-      <div class="section-label">🦙 Alpaca Hazards</div>
-      <div class="var-row">
-        <div class="var-name">ALPACA_SPEED</div>
-        <div class="var-comment"><em>// Patrol speed (px/frame). 0 = frozen. 3 = zippy!</em></div>
-        <div class="slider-wrap">
-          <input type="range" id="t-alpaca" min="0" max="3" value="0.9" step="0.1">
-          <div class="val-badge" id="t-alpaca-val">0.9</div>
-        </div>
-      </div>
-      <div class="var-row">
-        <div class="var-name">HIT_RADIUS</div>
-        <div class="var-comment"><em>// Collision distance (px). Bigger = harder. Smaller = pixel-perfect.</em></div>
-        <div class="slider-wrap">
-          <input type="range" id="t-hitrad" min="6" max="40" value="20" step="1">
-          <div class="val-badge" id="t-hitrad-val">20</div>
-        </div>
-      </div>
-    </div>
+    const gc = document.getElementById('gc');
+    const ctx = gc.getContext('2d');
+    const wrap = document.getElementById('game-wrap');
 
-    <div class="tinker-section">
-      <div class="section-label">🧪 Advanced</div>
-      <div class="var-row">
-        <div class="var-name">CAMERA_LAG</div>
-        <div class="var-comment"><em>// camX += gap × CAMERA_LAG each frame. 0.05 = silky. 1.0 = instant snap.</em></div>
-        <div class="slider-wrap">
-          <input type="range" id="t-camlag" min="0.02" max="1.0" value="0.07" step="0.02">
-          <div class="val-badge" id="t-camlag-val">0.07</div>
-        </div>
-      </div>
-      <div class="var-row">
-        <div class="var-name">SQUISH_AMOUNT</div>
-        <div class="var-comment"><em>// Landing squash scale. 1.0 = no squish. 0.5 = pancake Capy.</em></div>
-        <div class="slider-wrap">
-          <input type="range" id="t-squish" min="0.5" max="1.0" value="0.68" step="0.05">
-          <div class="val-badge" id="t-squish-val">0.68</div>
-        </div>
-      </div>
-      <div class="var-row">
-        <div class="var-name">SNOW_COUNT</div>
-        <div class="var-comment"><em>// Snowflakes. 0 = clear day. 120 = blizzard!</em></div>
-        <div class="slider-wrap">
-          <input type="range" id="t-snow" min="0" max="120" value="35" step="5">
-          <div class="val-badge" id="t-snow-val">35</div>
-        </div>
-      </div>
-    </div>
+    function resize() { gc.width = wrap.clientWidth; gc.height = wrap.clientHeight; }
+    resize();
+    window.addEventListener('resize', () => { resize(); if (world) initSnow(); });
 
-    <button class="apply-btn" id="btn-apply">🐾 Apply Changes</button>
-    <div class="code-hint">💡 These are real JS variables! Search for "TINKERABLE VARIABLES" in the source to find them. 🧑‍💻</div>
-  </div>
-</div>
+    // ── 🔧 TINKERABLE VARIABLES ──────────────────────────
+    let CFG = {
+      CAPY_COLOR: '#c8855a',  // Capy's fur hex colour
+      JUMP_FORCE: 13,          // upward impulse: capy.vy = -JUMP_FORCE
+      SCROLL_SPEED: 1.8,         // constant rightward world scroll (px/frame) — replaces jump X-boost
+      GRAVITY: 0.38,        // downward accel each frame: capy.vy += GRAVITY
+      DOUBLE_JUMP: true,        // feature flag: second jump allowed in mid-air
+      LIVES: 3,           // starting hearts
+      STICKER_SCORE: 20,          // score += STICKER_SCORE per collect
+      ALPACA_SPEED: 0.9,         // alpaca patrol speed (px/frame)
+      HIT_RADIUS: 20,          // collision distance (px)
+      CAMERA_LAG: 0.07,        // lerp factor: camX += gap * CAMERA_LAG
+      SQUISH_AMOUNT: 0.68,        // squash scale on landing (1.0 = none)
+      SNOW_COUNT: 35,          // number of background snowflakes
+    };
 
-<script>
-// ═══════════════════════════════════════════════════
-//   CAPY'S MOUNTAIN ADVENTURE v4 — improved playability
-// ═══════════════════════════════════════════════════
+    // ── Slider wiring ─────────────────────────────────────
+    ['t-jump', 't-speed', 't-gravity', 't-lives', 't-stkscore',
+      't-alpaca', 't-hitrad', 't-camlag', 't-squish', 't-snow'].forEach(id => {
+        const el = document.getElementById(id);
+        const vl = document.getElementById(id + '-val');
+        if (el && vl) el.addEventListener('input', () => vl.textContent = el.value);
+      });
 
-const gc   = document.getElementById('gc');
-const ctx  = gc.getContext('2d');
-const wrap = document.getElementById('game-wrap');
-
-function resize() { gc.width = wrap.clientWidth; gc.height = wrap.clientHeight; }
-resize();
-window.addEventListener('resize', () => { resize(); if (world) initSnow(); });
-
-// ── 🔧 TINKERABLE VARIABLES ──────────────────────────
-let CFG = {
-  CAPY_COLOR:     '#c8855a',  // Capy's fur hex colour
-  JUMP_FORCE:     13,          // upward impulse: capy.vy = -JUMP_FORCE
-  SCROLL_SPEED:   1.8,         // constant rightward world scroll (px/frame) — replaces jump X-boost
-  GRAVITY:        0.38,        // downward accel each frame: capy.vy += GRAVITY
-  DOUBLE_JUMP:    true,        // feature flag: second jump allowed in mid-air
-  LIVES:          3,           // starting hearts
-  STICKER_SCORE:  20,          // score += STICKER_SCORE per collect
-  ALPACA_SPEED:   0.9,         // alpaca patrol speed (px/frame)
-  HIT_RADIUS:     20,          // collision distance (px)
-  CAMERA_LAG:     0.07,        // lerp factor: camX += gap * CAMERA_LAG
-  SQUISH_AMOUNT:  0.68,        // squash scale on landing (1.0 = none)
-  SNOW_COUNT:     35,          // number of background snowflakes
-};
-
-// ── Slider wiring ─────────────────────────────────────
-['t-jump','t-speed','t-gravity','t-lives','t-stkscore',
- 't-alpaca','t-hitrad','t-camlag','t-squish','t-snow'].forEach(id => {
-  const el = document.getElementById(id);
-  const vl = document.getElementById(id + '-val');
-  if (el && vl) el.addEventListener('input', () => vl.textContent = el.value);
-});
-
-document.getElementById('btn-apply').addEventListener('click', () => {
-  CFG.CAPY_COLOR    = document.getElementById('t-color').value    || '#c8855a';
-  CFG.JUMP_FORCE    = parseFloat(document.getElementById('t-jump').value);
-  CFG.SCROLL_SPEED  = parseFloat(document.getElementById('t-speed').value);
-  CFG.GRAVITY       = parseFloat(document.getElementById('t-gravity').value);
-  CFG.DOUBLE_JUMP   = document.getElementById('t-doublejump').checked;
-  CFG.LIVES         = parseInt(document.getElementById('t-lives').value);
-  CFG.STICKER_SCORE = parseInt(document.getElementById('t-stkscore').value);
-  CFG.ALPACA_SPEED  = parseFloat(document.getElementById('t-alpaca').value);
-  CFG.HIT_RADIUS    = parseFloat(document.getElementById('t-hitrad').value);
-  CFG.CAMERA_LAG    = parseFloat(document.getElementById('t-camlag').value);
-  CFG.SQUISH_AMOUNT = parseFloat(document.getElementById('t-squish').value);
-  CFG.SNOW_COUNT    = parseInt(document.getElementById('t-snow').value);
-  initSnow();
-  const btn = document.getElementById('btn-apply');
-  btn.textContent = '✅ Applied!'; btn.style.background = '#7ecf6c';
-  setTimeout(() => { btn.textContent = '🐾 Apply Changes'; btn.style.background = ''; }, 900);
-});
-
-// ── State ─────────────────────────────────────────────
-let state = 'start', t = 0, camX = 0, score = 0, lives = 3;
-let distance = 0, winFlag = false;
-let capy, world, snowflakes = [], particles = [];
-
-const WORLD_LEN = 5800;
-const GF = () => gc.height * 0.80;
-
-// ── World ──────────────────────────────────────────────
-// Key playability changes:
-// 1. Every gap is preceded by a generous safe run-up zone
-// 2. Stickers are always on safe platforms, never over gaps
-// 3. Hazard zones (alpacas) are clearly separated from jump zones
-// 4. Platform widths are much more generous, especially early
-// 5. Gaps are sized to be comfortably clearable at default speed
-function buildWorld() {
-  const platforms = [
-    // ── ZONE 1: Tutorial run — wide, safe, one small hop ──
-    { x: -80,  yF:0.80, w:500, type:'ground'   },   // long start pad
-    { x:  480, yF:0.80, w:280, type:'ground'   },   // land after first gap (gap = 60px, very easy)
-    { x:  820, yF:0.65, w:130, type:'snow'     },   // optional elevated platform for sticker
-    { x:  780, yF:0.77, w:220, type:'mountain' },
-    { x: 1060, yF:0.80, w:380, type:'ground'   },   // wide safe landing
-
-    // ── ZONE 2: Tower + medium gap ──
-    { x: 1500, yF:0.80, w:240, type:'ground'   },   // run-up before tower
-    { x: 1790, yF:0.55, w:100, type:'tower'    },   // tower
-    { x: 1960, yF:0.80, w:360, type:'ground'   },   // wide landing
-
-    // ── ZONE 3: Stepping stones — clearly telegraphed ──
-    { x: 2390, yF:0.80, w:200, type:'ground'   },   // run-up
-    { x: 2650, yF:0.70, w:130, type:'snow'     },   // stone 1 (big)
-    { x: 2840, yF:0.62, w:120, type:'snow'     },   // stone 2
-    { x: 3020, yF:0.70, w:130, type:'snow'     },   // stone 3 (back down)
-    { x: 3210, yF:0.80, w:320, type:'ground'   },   // wide landing
-
-    // ── ZONE 4: Big mountain ──
-    { x: 3590, yF:0.80, w:260, type:'ground'   },   // run-up
-    { x: 3910, yF:0.50, w:170, type:'snow'     },   // summit
-    { x: 3860, yF:0.64, w:270, type:'mountain' },
-    { x: 4190, yF:0.80, w:360, type:'ground'   },   // long landing
-
-    // ── ZONE 5: Second tower, then final stretch ──
-    { x: 4620, yF:0.80, w:200, type:'ground'   },
-    { x: 4870, yF:0.55, w:95,  type:'tower'    },
-    { x: 5030, yF:0.80, w:800, type:'ground'   },   // finish runway
-  ];
-
-  // Stickers: always on safe platforms, well back from edges
-  const stickers = [
-    { x:  240, yF:0.70, e:'⭐' },   // early freebie on start pad
-    { x:  600, yF:0.70, e:'🦫' },   // second pad
-    { x:  860, yF:0.53, e:'🎀' },   // elevated snow platform reward
-    { x: 1200, yF:0.70, e:'❤️' },   // wide landing zone
-    { x: 1620, yF:0.70, e:'🌸' },   // run-up to tower
-    { x: 1840, yF:0.42, e:'⭐' },   // top of tower (brave reward!)
-    { x: 2100, yF:0.70, e:'🍪' },   // post-tower landing
-    { x: 2680, yF:0.57, e:'🦙' },   // stone 1
-    { x: 2870, yF:0.49, e:'🌼' },   // stone 2 peak
-    { x: 3330, yF:0.70, e:'❤️' },   // safe landing after stones
-    { x: 3700, yF:0.70, e:'🦫' },   // mountain run-up
-    { x: 3960, yF:0.37, e:'🎴' },   // summit (big reward!)
-    { x: 4320, yF:0.70, e:'🌸' },   // after mountain
-    { x: 4900, yF:0.42, e:'⭐' },   // top of second tower
-    { x: 5200, yF:0.70, e:'🏕️' },  // finish straight
-  ];
-
-  // Alpacas: only in wide safe zones, never right after a jump landing
-  const alpacas = [
-    { x: 1100, yF:0.80, patrolW:200, dir:1 },   // mid zone-1 safe area
-    { x: 2050, yF:0.80, patrolW:200, dir:1 },   // post-tower wide landing
-    { x: 3280, yF:0.80, patrolW:220, dir:1 },   // post-stones landing
-    { x: 4280, yF:0.80, patrolW:240, dir:1 },   // post-mountain landing
-    { x: 5100, yF:0.80, patrolW:280, dir:1 },   // finish straight
-  ];
-  alpacas.forEach(a => { a.px = a.x; a.warnTimer = 0; });
-  stickers.forEach(s => s.collected = false);
-  return { platforms, stickers, alpacas };
-}
-
-// ── Snow ──────────────────────────────────────────────
-function initSnow() {
-  snowflakes = [];
-  for (let i = 0; i < CFG.SNOW_COUNT; i++) {
-    snowflakes.push({
-      x: Math.random() * gc.width,
-      y: Math.random() * gc.height,
-      r: Math.random() * 2.4 + 0.7,
-      speed: Math.random() * 0.65 + 0.2,
-      drift: (Math.random() - 0.5) * 0.3,
+    document.getElementById('btn-apply').addEventListener('click', () => {
+      CFG.CAPY_COLOR = document.getElementById('t-color').value || '#c8855a';
+      CFG.JUMP_FORCE = parseFloat(document.getElementById('t-jump').value);
+      CFG.SCROLL_SPEED = parseFloat(document.getElementById('t-speed').value);
+      CFG.GRAVITY = parseFloat(document.getElementById('t-gravity').value);
+      CFG.DOUBLE_JUMP = document.getElementById('t-doublejump').checked;
+      CFG.LIVES = parseInt(document.getElementById('t-lives').value);
+      CFG.STICKER_SCORE = parseInt(document.getElementById('t-stkscore').value);
+      CFG.ALPACA_SPEED = parseFloat(document.getElementById('t-alpaca').value);
+      CFG.HIT_RADIUS = parseFloat(document.getElementById('t-hitrad').value);
+      CFG.CAMERA_LAG = parseFloat(document.getElementById('t-camlag').value);
+      CFG.SQUISH_AMOUNT = parseFloat(document.getElementById('t-squish').value);
+      CFG.SNOW_COUNT = parseInt(document.getElementById('t-snow').value);
+      initSnow();
+      const btn = document.getElementById('btn-apply');
+      btn.textContent = '✅ Applied!'; btn.style.background = '#7ecf6c';
+      setTimeout(() => { btn.textContent = '🐾 Apply Changes'; btn.style.background = ''; }, 900);
     });
-  }
-}
 
-function drawSnow() {
-  ctx.fillStyle = 'rgba(255,255,255,0.80)';
-  snowflakes.forEach(s => {
-    s.y += s.speed; s.x += s.drift;
-    if (s.y > gc.height + 4) { s.y = -4; s.x = Math.random() * gc.width; }
-    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
-  });
-}
+    // ── State ─────────────────────────────────────────────
+    let state = 'start', t = 0, camX = 0, score = 0, lives = 3;
+    let distance = 0, winFlag = false;
+    let capy, world, snowflakes = [], particles = [];
 
-// ── HUD ───────────────────────────────────────────────
-function updateHUD() {
-  document.getElementById('score-el').textContent = score;
-  const tot = world ? world.stickers.length : 0;
-  const got = world ? world.stickers.filter(s => s.collected).length : 0;
-  document.getElementById('stk-el').textContent  = got;
-  document.getElementById('stk-tot').textContent = tot;
-  document.getElementById('lives-hud').textContent = '❤️'.repeat(Math.max(0, lives)) || '💔';
-  document.getElementById('dist-el').textContent  = distance;
-}
+    const WORLD_LEN = 5800;
+    const GF = () => gc.height * 0.80;
 
-// ── Coordinate helpers ────────────────────────────────
-const sx  = wx  => wx - camX;
-const wy  = yf  => gc.height * yf;
+    // ── World ──────────────────────────────────────────────
+    // Key playability changes:
+    // 1. Every gap is preceded by a generous safe run-up zone
+    // 2. Stickers are always on safe platforms, never over gaps
+    // 3. Hazard zones (alpacas) are clearly separated from jump zones
+    // 4. Platform widths are much more generous, especially early
+    // 5. Gaps are sized to be comfortably clearable at default speed
+    function buildWorld() {
+      const platforms = [
+        // ── ZONE 1: Tutorial run — wide, safe, one small hop ──
+        { x: -80, yF: 0.80, w: 500, type: 'ground' },   // long start pad
+        { x: 480, yF: 0.80, w: 280, type: 'ground' },   // land after first gap (gap = 60px, very easy)
+        { x: 820, yF: 0.65, w: 130, type: 'snow' },   // optional elevated platform for sticker
+        { x: 780, yF: 0.77, w: 220, type: 'mountain' },
+        { x: 1060, yF: 0.80, w: 380, type: 'ground' },   // wide safe landing
 
-// ── Background ────────────────────────────────────────
-function drawBackground() {
-  const grad = ctx.createLinearGradient(0, 0, 0, gc.height);
-  grad.addColorStop(0,    '#7ecbe8');
-  grad.addColorStop(0.55, '#c8eaf8');
-  grad.addColorStop(0.82, '#d8f0d0');
-  grad.addColorStop(1,    '#b8e098');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, gc.width, gc.height);
+        // ── ZONE 2: Tower + medium gap ──
+        { x: 1500, yF: 0.80, w: 240, type: 'ground' },   // run-up before tower
+        { x: 1790, yF: 0.55, w: 100, type: 'tower' },   // tower
+        { x: 1960, yF: 0.80, w: 360, type: 'ground' },   // wide landing
 
-  // Distant parallax mountains
-  ctx.fillStyle = 'rgba(168,200,220,0.35)';
-  [0.06,0.22,0.38,0.55,0.72,0.90,1.08].forEach((xf, i) => {
-    const bx = ((xf * WORLD_LEN - camX * 0.18) % (gc.width + 240)) - 120;
-    const by = gc.height * (0.62 + (i % 3) * 0.04);
-    const bw = gc.width  * (0.17 + (i % 2) * 0.04);
-    ctx.beginPath();
-    ctx.moveTo(bx - bw/2, GF()); ctx.lineTo(bx, by); ctx.lineTo(bx + bw/2, GF());
-    ctx.closePath(); ctx.fill();
-  });
+        // ── ZONE 3: Stepping stones — clearly telegraphed ──
+        { x: 2390, yF: 0.80, w: 200, type: 'ground' },   // run-up
+        { x: 2650, yF: 0.70, w: 130, type: 'snow' },   // stone 1 (big)
+        { x: 2840, yF: 0.62, w: 120, type: 'snow' },   // stone 2
+        { x: 3020, yF: 0.70, w: 130, type: 'snow' },   // stone 3 (back down)
+        { x: 3210, yF: 0.80, w: 320, type: 'ground' },   // wide landing
 
-  // Ground fill
-  ctx.fillStyle = '#88c870';
-  ctx.fillRect(0, GF(), gc.width, gc.height - GF());
-  ctx.fillStyle = '#6ab858';
-  ctx.fillRect(0, GF(), gc.width, 8);
+        // ── ZONE 4: Big mountain ──
+        { x: 3590, yF: 0.80, w: 260, type: 'ground' },   // run-up
+        { x: 3910, yF: 0.50, w: 170, type: 'snow' },   // summit
+        { x: 3860, yF: 0.64, w: 270, type: 'mountain' },
+        { x: 4190, yF: 0.80, w: 360, type: 'ground' },   // long landing
 
-  // Ground flowers
-  ctx.font = `${Math.round(gc.height * 0.034)}px serif`;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-  for (let i = 0; i < 14; i++) {
-    const fx = ((i * 165 - camX * 0.58 + 3600) % (gc.width + 40)) - 20;
-    ctx.fillText(['🌼','🌸','🌷'][i % 3], fx, GF() + 2);
-  }
-}
+        // ── ZONE 5: Second tower, then final stretch ──
+        { x: 4620, yF: 0.80, w: 200, type: 'ground' },
+        { x: 4870, yF: 0.55, w: 95, type: 'tower' },
+        { x: 5030, yF: 0.80, w: 800, type: 'ground' },   // finish runway
+      ];
 
-// ── Platform edge markers (improve gap readability) ───
-// Draws a small striped hazard edge at platform ends so the
-// player can see exactly where safe ground stops.
-function drawEdgeMarker(px, py, pw) {
-  const mw = 10, mh = 7;
-  // Left edge
-  ctx.fillStyle = 'rgba(180,100,40,0.55)';
-  for (let i = 0; i < mh; i++) {
-    if (i % 2 === 0) ctx.fillRect(px, py + i, mw, 1);
-  }
-  // Right edge
-  for (let i = 0; i < mh; i++) {
-    if (i % 2 === 0) ctx.fillRect(px + pw - mw, py + i, mw, 1);
-  }
-}
+      // Stickers: always on safe platforms, well back from edges
+      const stickers = [
+        { x: 240, yF: 0.70, e: '⭐' },   // early freebie on start pad
+        { x: 600, yF: 0.70, e: '🦫' },   // second pad
+        { x: 860, yF: 0.53, e: '🎀' },   // elevated snow platform reward
+        { x: 1200, yF: 0.70, e: '❤️' },   // wide landing zone
+        { x: 1620, yF: 0.70, e: '🌸' },   // run-up to tower
+        { x: 1840, yF: 0.42, e: '⭐' },   // top of tower (brave reward!)
+        { x: 2100, yF: 0.70, e: '🍪' },   // post-tower landing
+        { x: 2680, yF: 0.57, e: '🦙' },   // stone 1
+        { x: 2870, yF: 0.49, e: '🌼' },   // stone 2 peak
+        { x: 3330, yF: 0.70, e: '❤️' },   // safe landing after stones
+        { x: 3700, yF: 0.70, e: '🦫' },   // mountain run-up
+        { x: 3960, yF: 0.37, e: '🎴' },   // summit (big reward!)
+        { x: 4320, yF: 0.70, e: '🌸' },   // after mountain
+        { x: 4900, yF: 0.42, e: '⭐' },   // top of second tower
+        { x: 5200, yF: 0.70, e: '🏕️' },  // finish straight
+      ];
 
-function drawPlatform(p) {
-  const px = sx(p.x), py = wy(p.yF);
-  const pw = p.w, ph = gc.height - py + 4;
-  if (px + pw < -8 || px > gc.width + 8) return;
-
-  if (p.type === 'ground') {
-    ctx.fillStyle = '#88c870'; ctx.fillRect(px, py, pw, ph);
-    ctx.fillStyle = '#6ab858'; ctx.fillRect(px, py, pw, 8);
-    ctx.fillStyle = '#58a848';
-    for (let i = 8; i < pw - 8; i += 22) {
-      ctx.fillRect(px+i, py-3, 4, 4); ctx.fillRect(px+i+6, py-4, 3, 5);
+      // Alpacas: only in wide safe zones, never right after a jump landing
+      const alpacas = [
+        { x: 1100, yF: 0.80, patrolW: 200, dir: 1 },   // mid zone-1 safe area
+        { x: 2050, yF: 0.80, patrolW: 200, dir: 1 },   // post-tower wide landing
+        { x: 3280, yF: 0.80, patrolW: 220, dir: 1 },   // post-stones landing
+        { x: 4280, yF: 0.80, patrolW: 240, dir: 1 },   // post-mountain landing
+        { x: 5100, yF: 0.80, patrolW: 280, dir: 1 },   // finish straight
+      ];
+      alpacas.forEach(a => { a.px = a.x; a.warnTimer = 0; });
+      stickers.forEach(s => s.collected = false);
+      return { platforms, stickers, alpacas };
     }
-    drawEdgeMarker(px, py, pw);
-  } else if (p.type === 'mountain') {
-    ctx.fillStyle = '#a0bccc'; ctx.fillRect(px, py, pw, ph);
-    ctx.fillStyle = '#bcd0dc'; ctx.fillRect(px, py, pw, 7);
-  } else if (p.type === 'snow') {
-    ctx.fillStyle = '#d8eef8'; ctx.fillRect(px, py, pw, ph);
-    ctx.fillStyle = '#eef8ff'; ctx.fillRect(px, py, pw, 7);
-    ctx.fillStyle = 'rgba(255,255,255,0.9)';
-    for (let i = 0; i < 5; i++) {
-      ctx.beginPath(); ctx.arc(px + 10 + i*(pw/5), py+3, 2, 0, Math.PI*2); ctx.fill();
+
+    // ── Snow ──────────────────────────────────────────────
+    function initSnow() {
+      snowflakes = [];
+      for (let i = 0; i < CFG.SNOW_COUNT; i++) {
+        snowflakes.push({
+          x: Math.random() * gc.width,
+          y: Math.random() * gc.height,
+          r: Math.random() * 2.4 + 0.7,
+          speed: Math.random() * 0.65 + 0.2,
+          drift: (Math.random() - 0.5) * 0.3,
+        });
+      }
     }
-    drawEdgeMarker(px, py, pw);
-  } else if (p.type === 'tower') {
-    ctx.fillStyle = '#b09888'; ctx.fillRect(px, py, pw, ph);
-    ctx.fillStyle = '#9a8070';
-    const bw2 = pw/5;
-    for (let i = 0; i < 4; i++) ctx.fillRect(px + i*bw2, py-10, bw2-3, 12);
-    ctx.fillStyle = '#5a3828';
-    ctx.fillRect(px + pw*0.32, py + ph*0.15, pw*0.36, ph*0.22);
-    ctx.fillStyle = '#8a6868';
-    ctx.beginPath();
-    ctx.moveTo(px-7, py-10); ctx.lineTo(px+pw/2, py-34); ctx.lineTo(px+pw+7, py-10);
-    ctx.closePath(); ctx.fill();
-    ctx.fillStyle = '#ff8fa8';
-    ctx.beginPath();
-    ctx.moveTo(px+pw/2, py-34); ctx.lineTo(px+pw/2+14, py-26); ctx.lineTo(px+pw/2, py-18);
-    ctx.closePath(); ctx.fill();
-    drawEdgeMarker(px, py, pw);
-  }
-}
 
-function drawMountainShape(p) {
-  if (p.type !== 'mountain' && p.type !== 'snow') return;
-  const px = sx(p.x), py = wy(p.yF);
-  if (px + p.w + 80 < 0 || px - 80 > gc.width) return;
-  const cx2 = px + p.w/2, peak = py - p.w * 0.75;
-  ctx.fillStyle = 'rgba(160,190,215,0.40)';
-  ctx.beginPath();
-  ctx.moveTo(cx2 - p.w*0.9, GF()); ctx.lineTo(cx2, peak); ctx.lineTo(cx2 + p.w*0.9, GF());
-  ctx.closePath(); ctx.fill();
-  ctx.fillStyle = 'rgba(240,250,255,0.52)';
-  ctx.beginPath();
-  ctx.moveTo(cx2 - p.w*0.22, py - p.w*0.3); ctx.lineTo(cx2, peak); ctx.lineTo(cx2 + p.w*0.22, py - p.w*0.3);
-  ctx.closePath(); ctx.fill();
-}
-
-// ── Stickers ──────────────────────────────────────────
-function drawSticker(s) {
-  if (s.collected) return;
-  const spx = sx(s.x), spy = wy(s.yF);
-  if (spx < -40 || spx > gc.width + 40) return;
-  const bob = Math.sin(t * 0.055 + s.x * 0.01) * 4;
-  ctx.save();
-  ctx.globalAlpha = 0.26 + Math.sin(t * 0.065 + s.x) * 0.10;
-  ctx.fillStyle = '#ffd640';
-  ctx.beginPath(); ctx.arc(spx, spy+bob, 17, 0, Math.PI*2); ctx.fill();
-  ctx.globalAlpha = 1;
-  ctx.font = `${Math.round(gc.height * 0.063)}px serif`;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(s.e, spx, spy+bob);
-  ctx.restore();
-}
-
-// ── Alpacas — with danger flash ───────────────────────
-// Plays a pulsing red glow ring when Capy gets close,
-// giving a clear visual warning before losing a life.
-function drawAlpaca(a) {
-  const apx = sx(a.px), apy = wy(a.yF);
-  if (apx < -55 || apx > gc.width + 55) return;
-
-  // Danger proximity glow (warn when within 1.8× hit radius)
-  const dx = Math.abs(capy ? capy.x + capy.w/2 - a.px : 9999);
-  const dy = Math.abs(capy ? capy.y + capy.h/2 - wy(a.yF) : 9999);
-  const dist2 = Math.sqrt(dx*dx + dy*dy);
-  const warnDist = CFG.HIT_RADIUS * 2.8;
-
-  if (dist2 < warnDist) {
-    const pulse = 0.4 + 0.5 * Math.abs(Math.sin(t * 0.18));
-    const radius = 28 + 10 * Math.abs(Math.sin(t * 0.18));
-    ctx.save();
-    ctx.globalAlpha = pulse * (1 - dist2 / warnDist);
-    ctx.fillStyle = '#ff4444';
-    ctx.beginPath(); ctx.arc(apx, apy - 22, radius, 0, Math.PI*2); ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.restore();
-  }
-
-  // Alpaca emoji
-  ctx.save();
-  if (a.dir < 0) { ctx.translate(apx * 2, 0); ctx.scale(-1, 1); }
-  ctx.font = `${Math.round(gc.height * 0.074)}px serif`;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-  ctx.fillText('🦙', apx, apy - 2);
-  ctx.restore();
-}
-
-// ── Capy ──────────────────────────────────────────────
-function shadeColor(hex, pct) {
-  try {
-    let r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
-    r = Math.min(255,Math.max(0,r+pct)); g = Math.min(255,Math.max(0,g+pct)); b = Math.min(255,Math.max(0,b+pct));
-    return `rgb(${r},${g},${b})`;
-  } catch { return hex; }
-}
-
-function drawCapybara() {
-  if (capy.dead) return;
-  if (capy.invincible > 0 && Math.floor(t/5) % 2 === 0) return;
-
-  const cx = sx(capy.x + capy.w/2), cy = capy.y + capy.h/2;
-  const col = CFG.CAPY_COLOR, dk = shadeColor(col, -30);
-
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.scale(1, capy.squishY);
-
-  // Shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.11)';
-  ctx.beginPath(); ctx.ellipse(0, capy.h/2+3, 23, 6, 0, 0, Math.PI*2); ctx.fill();
-
-  // Body
-  ctx.fillStyle = col;
-  ctx.beginPath(); ctx.ellipse(0, 3, 21, 14, 0, 0, Math.PI*2); ctx.fill();
-
-  // Head
-  ctx.beginPath(); ctx.ellipse(18, -4, 14, 12, -0.12, 0, Math.PI*2); ctx.fill();
-
-  // Snout
-  ctx.fillStyle = dk;
-  ctx.beginPath(); ctx.ellipse(29, -2, 7, 5.5, 0, 0, Math.PI*2); ctx.fill();
-
-  // Nostrils
-  ctx.fillStyle = shadeColor(col, -60);
-  ctx.beginPath(); ctx.arc(31,-1,1.4,0,Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(28,-3,1.2,0,Math.PI*2); ctx.fill();
-
-  // Eye
-  ctx.fillStyle = '#2a1008';
-  ctx.beginPath(); ctx.arc(21,-8,3.5,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = 'white';
-  ctx.beginPath(); ctx.arc(20,-10,1.4,0,Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(23,-7,0.7,0,Math.PI*2); ctx.fill();
-
-  // Ear
-  ctx.fillStyle = dk;
-  ctx.beginPath(); ctx.ellipse(13,-15,5.5,4.5,-0.4,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = shadeColor(col,15);
-  ctx.beginPath(); ctx.ellipse(13,-15,3.5,2.8,-0.4,0,Math.PI*2); ctx.fill();
-
-  // Smile
-  ctx.strokeStyle = shadeColor(col,-50); ctx.lineWidth = 2; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.arc(29.5,0,4,0.3,Math.PI-0.3); ctx.stroke();
-
-  if (capy.happy > 0) {
-    ctx.font = '10px serif'; ctx.textAlign = 'center';
-    ctx.fillText('💗', 10, -22); capy.happy--;
-  }
-
-  // Legs
-  ctx.fillStyle = dk;
-  const swing = capy.onGround ? Math.sin(t * 0.22) * 5 : 0;
-  [[-13,12+swing],[-3,13-swing],[7,12+swing],[17,13-swing]].forEach(([lx,ly]) => {
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(lx-3.5,ly,7,10,3); else ctx.fillRect(lx-3.5,ly,7,10);
-    ctx.fill();
-  });
-
-  // Tail
-  ctx.fillStyle = col;
-  ctx.beginPath(); ctx.ellipse(-20,4,5,4,0.3,0,Math.PI*2); ctx.fill();
-
-  ctx.restore();
-}
-
-// ── Particles ─────────────────────────────────────────
-function drawParticles() {
-  particles.forEach(p => {
-    ctx.save();
-    ctx.globalAlpha = p.life / p.maxLife;
-    ctx.font = `${p.size}px serif`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(p.e, sx(p.wx), p.y);
-    ctx.restore();
-  });
-}
-
-// ── Finish flag ───────────────────────────────────────
-function drawFinish() {
-  const fx = sx(WORLD_LEN - 180), fy = GF() - 90;
-  if (fx < -80 || fx > gc.width + 10) return;
-  ctx.fillStyle = '#8b5a3a';
-  ctx.fillRect(fx, fy, 5, 90);
-  const wave = Math.sin(t * 0.08) * 4;
-  ctx.fillStyle = '#ff8fa8';
-  ctx.beginPath();
-  ctx.moveTo(fx+5, fy+wave); ctx.lineTo(fx+48, fy+16+wave); ctx.lineTo(fx+5, fy+32+wave);
-  ctx.closePath(); ctx.fill();
-  ctx.font = '14px serif'; ctx.textAlign = 'left';
-  ctx.fillText('🦫', fx-10, fy-12);
-  ctx.fillStyle = '#8b4a25';
-  ctx.font = `bold ${Math.round(gc.height*0.032)}px 'Baloo 2',cursive`;
-  ctx.textAlign = 'center';
-  ctx.fillText('FINISH!', fx+3, fy-16);
-}
-
-// ── Physics ───────────────────────────────────────────
-// Key change: Capy no longer gets a horizontal jump boost.
-// Instead, the world scrolls at a constant SCROLL_SPEED and Capy
-// is carried with it automatically. Jumping is purely vertical.
-// This makes the game feel like a classic endless runner —
-// the player only needs to think about WHEN to jump, not WHERE.
-function updateCapy() {
-  if (capy.dead) return;
-
-  // Gravity
-  capy.vy += CFG.GRAVITY;
-
-  // Constant horizontal scroll (world moves, Capy stays roughly centred)
-  capy.x += CFG.SCROLL_SPEED;
-
-  // Vertical movement
-  capy.y += capy.vy;
-
-  if (capy.invincible > 0) capy.invincible--;
-  capy.squishY += (1 - capy.squishY) * 0.14;
-  if (Math.abs(capy.squishY - 1) < 0.01) capy.squishY = 1;
-
-  // Platform collisions
-  capy.onGround = false;
-  const feetY = capy.y + capy.h;
-  for (const p of world.platforms) {
-    const psy = wy(p.yF);
-    const inX = capy.x + capy.w - 4 > p.x && capy.x + 4 < p.x + p.w;
-    const prevFeet = feetY - capy.vy;
-    if (inX && prevFeet <= psy + 6 && feetY >= psy && capy.vy >= 0) {
-      capy.y = psy - capy.h;
-      capy.vy = 0;
-      capy.onGround = true;
-      capy.jumpsLeft = CFG.DOUBLE_JUMP ? 2 : 1;
-      capy.squishY = CFG.SQUISH_AMOUNT;
-      break;
+    function drawSnow() {
+      ctx.fillStyle = 'rgba(255,255,255,0.80)';
+      snowflakes.forEach(s => {
+        s.y += s.speed; s.x += s.drift;
+        if (s.y > gc.height + 4) { s.y = -4; s.x = Math.random() * gc.width; }
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+      });
     }
-  }
 
-  // Fell off bottom
-  if (capy.y > gc.height + 80) loseLife();
-
-  // Left camera boundary (can't fall behind)
-  const leftBound = camX + 16;
-  if (capy.x < leftBound) { capy.x = leftBound; }
-
-  // Win check
-  if (!winFlag && capy.x > WORLD_LEN - 200) {
-    winFlag = true;
-    setTimeout(triggerWin, 600);
-  }
-}
-
-// Camera: Capy sits at ~28% from left so player sees MORE ahead
-// This gives around 72% of the screen as look-ahead space —
-// previously it was 30% (70% look-ahead). Small shift but meaningful.
-function updateCamera() {
-  const target = capy.x - gc.width * 0.28;
-  camX += (target - camX) * CFG.CAMERA_LAG;
-  camX = Math.max(0, Math.min(camX, WORLD_LEN - gc.width));
-}
-
-function updateAlpacas() {
-  world.alpacas.forEach(a => {
-    a.px += CFG.ALPACA_SPEED * a.dir;
-    if (a.px > a.x + a.patrolW || a.px < a.x) a.dir *= -1;
-    if (capy.invincible === 0) {
-      const dx = Math.abs(capy.x + capy.w/2 - a.px);
-      const dy = Math.abs(capy.y + capy.h/2 - wy(a.yF));
-      if (dx < CFG.HIT_RADIUS && dy < CFG.HIT_RADIUS) loseLife();
+    // ── HUD ───────────────────────────────────────────────
+    function updateHUD() {
+      document.getElementById('score-el').textContent = score;
+      const tot = world ? world.stickers.length : 0;
+      const got = world ? world.stickers.filter(s => s.collected).length : 0;
+      document.getElementById('stk-el').textContent = got;
+      document.getElementById('stk-tot').textContent = tot;
+      document.getElementById('lives-hud').textContent = '❤️'.repeat(Math.max(0, lives)) || '💔';
+      document.getElementById('dist-el').textContent = distance;
     }
-  });
-}
 
-function updateStickers() {
-  world.stickers.forEach(s => {
-    if (s.collected) return;
-    const dx = Math.abs(capy.x + capy.w/2 - s.x);
-    const dy = Math.abs(capy.y + capy.h/2 - wy(s.yF));
-    if (dx < 30 && dy < 30) {
-      s.collected = true;
-      score += CFG.STICKER_SCORE;
-      capy.happy = 40;
+    // ── Coordinate helpers ────────────────────────────────
+    const sx = wx => wx - camX;
+    const wy = yf => gc.height * yf;
+
+    // ── Background ────────────────────────────────────────
+    function drawBackground() {
+      const grad = ctx.createLinearGradient(0, 0, 0, gc.height);
+      grad.addColorStop(0, '#7ecbe8');
+      grad.addColorStop(0.55, '#c8eaf8');
+      grad.addColorStop(0.82, '#d8f0d0');
+      grad.addColorStop(1, '#b8e098');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, gc.width, gc.height);
+
+      // Distant parallax mountains
+      ctx.fillStyle = 'rgba(168,200,220,0.35)';
+      [0.06, 0.22, 0.38, 0.55, 0.72, 0.90, 1.08].forEach((xf, i) => {
+        const bx = ((xf * WORLD_LEN - camX * 0.18) % (gc.width + 240)) - 120;
+        const by = gc.height * (0.62 + (i % 3) * 0.04);
+        const bw = gc.width * (0.17 + (i % 2) * 0.04);
+        ctx.beginPath();
+        ctx.moveTo(bx - bw / 2, GF()); ctx.lineTo(bx, by); ctx.lineTo(bx + bw / 2, GF());
+        ctx.closePath(); ctx.fill();
+      });
+
+      // Ground fill
+      ctx.fillStyle = '#88c870';
+      ctx.fillRect(0, GF(), gc.width, gc.height - GF());
+      ctx.fillStyle = '#6ab858';
+      ctx.fillRect(0, GF(), gc.width, 8);
+
+      // Ground flowers
+      ctx.font = `${Math.round(gc.height * 0.034)}px serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      for (let i = 0; i < 14; i++) {
+        const fx = ((i * 165 - camX * 0.58 + 3600) % (gc.width + 40)) - 20;
+        ctx.fillText(['🌼', '🌸', '🌷'][i % 3], fx, GF() + 2);
+      }
+    }
+
+    // ── Platform edge markers (improve gap readability) ───
+    // Draws a small striped hazard edge at platform ends so the
+    // player can see exactly where safe ground stops.
+    function drawEdgeMarker(px, py, pw) {
+      const mw = 10, mh = 7;
+      // Left edge
+      ctx.fillStyle = 'rgba(180,100,40,0.55)';
+      for (let i = 0; i < mh; i++) {
+        if (i % 2 === 0) ctx.fillRect(px, py + i, mw, 1);
+      }
+      // Right edge
+      for (let i = 0; i < mh; i++) {
+        if (i % 2 === 0) ctx.fillRect(px + pw - mw, py + i, mw, 1);
+      }
+    }
+
+    function drawPlatform(p) {
+      const px = sx(p.x), py = wy(p.yF);
+      const pw = p.w, ph = gc.height - py + 4;
+      if (px + pw < -8 || px > gc.width + 8) return;
+
+      if (p.type === 'ground') {
+        ctx.fillStyle = '#88c870'; ctx.fillRect(px, py, pw, ph);
+        ctx.fillStyle = '#6ab858'; ctx.fillRect(px, py, pw, 8);
+        ctx.fillStyle = '#58a848';
+        for (let i = 8; i < pw - 8; i += 22) {
+          ctx.fillRect(px + i, py - 3, 4, 4); ctx.fillRect(px + i + 6, py - 4, 3, 5);
+        }
+        drawEdgeMarker(px, py, pw);
+      } else if (p.type === 'mountain') {
+        ctx.fillStyle = '#a0bccc'; ctx.fillRect(px, py, pw, ph);
+        ctx.fillStyle = '#bcd0dc'; ctx.fillRect(px, py, pw, 7);
+      } else if (p.type === 'snow') {
+        ctx.fillStyle = '#d8eef8'; ctx.fillRect(px, py, pw, ph);
+        ctx.fillStyle = '#eef8ff'; ctx.fillRect(px, py, pw, 7);
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        for (let i = 0; i < 5; i++) {
+          ctx.beginPath(); ctx.arc(px + 10 + i * (pw / 5), py + 3, 2, 0, Math.PI * 2); ctx.fill();
+        }
+        drawEdgeMarker(px, py, pw);
+      } else if (p.type === 'tower') {
+        ctx.fillStyle = '#b09888'; ctx.fillRect(px, py, pw, ph);
+        ctx.fillStyle = '#9a8070';
+        const bw2 = pw / 5;
+        for (let i = 0; i < 4; i++) ctx.fillRect(px + i * bw2, py - 10, bw2 - 3, 12);
+        ctx.fillStyle = '#5a3828';
+        ctx.fillRect(px + pw * 0.32, py + ph * 0.15, pw * 0.36, ph * 0.22);
+        ctx.fillStyle = '#8a6868';
+        ctx.beginPath();
+        ctx.moveTo(px - 7, py - 10); ctx.lineTo(px + pw / 2, py - 34); ctx.lineTo(px + pw + 7, py - 10);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#ff8fa8';
+        ctx.beginPath();
+        ctx.moveTo(px + pw / 2, py - 34); ctx.lineTo(px + pw / 2 + 14, py - 26); ctx.lineTo(px + pw / 2, py - 18);
+        ctx.closePath(); ctx.fill();
+        drawEdgeMarker(px, py, pw);
+      }
+    }
+
+    function drawMountainShape(p) {
+      if (p.type !== 'mountain' && p.type !== 'snow') return;
+      const px = sx(p.x), py = wy(p.yF);
+      if (px + p.w + 80 < 0 || px - 80 > gc.width) return;
+      const cx2 = px + p.w / 2, peak = py - p.w * 0.75;
+      ctx.fillStyle = 'rgba(160,190,215,0.40)';
+      ctx.beginPath();
+      ctx.moveTo(cx2 - p.w * 0.9, GF()); ctx.lineTo(cx2, peak); ctx.lineTo(cx2 + p.w * 0.9, GF());
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = 'rgba(240,250,255,0.52)';
+      ctx.beginPath();
+      ctx.moveTo(cx2 - p.w * 0.22, py - p.w * 0.3); ctx.lineTo(cx2, peak); ctx.lineTo(cx2 + p.w * 0.22, py - p.w * 0.3);
+      ctx.closePath(); ctx.fill();
+    }
+
+    // ── Stickers ──────────────────────────────────────────
+    function drawSticker(s) {
+      if (s.collected) return;
+      const spx = sx(s.x), spy = wy(s.yF);
+      if (spx < -40 || spx > gc.width + 40) return;
+      const bob = Math.sin(t * 0.055 + s.x * 0.01) * 4;
+      ctx.save();
+      ctx.globalAlpha = 0.26 + Math.sin(t * 0.065 + s.x) * 0.10;
+      ctx.fillStyle = '#ffd640';
+      ctx.beginPath(); ctx.arc(spx, spy + bob, 17, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.font = `${Math.round(gc.height * 0.063)}px serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(s.e, spx, spy + bob);
+      ctx.restore();
+    }
+
+    // ── Alpacas — with danger flash ───────────────────────
+    // Plays a pulsing red glow ring when Capy gets close,
+    // giving a clear visual warning before losing a life.
+    function drawAlpaca(a) {
+      const apx = sx(a.px), apy = wy(a.yF);
+      if (apx < -55 || apx > gc.width + 55) return;
+
+      // Danger proximity glow (warn when within 1.8× hit radius)
+      const dx = Math.abs(capy ? capy.x + capy.w / 2 - a.px : 9999);
+      const dy = Math.abs(capy ? capy.y + capy.h / 2 - wy(a.yF) : 9999);
+      const dist2 = Math.sqrt(dx * dx + dy * dy);
+      const warnDist = CFG.HIT_RADIUS * 2.8;
+
+      if (dist2 < warnDist) {
+        const pulse = 0.4 + 0.5 * Math.abs(Math.sin(t * 0.18));
+        const radius = 28 + 10 * Math.abs(Math.sin(t * 0.18));
+        ctx.save();
+        ctx.globalAlpha = pulse * (1 - dist2 / warnDist);
+        ctx.fillStyle = '#ff4444';
+        ctx.beginPath(); ctx.arc(apx, apy - 22, radius, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+
+      // Alpaca emoji
+      ctx.save();
+      if (a.dir < 0) { ctx.translate(apx * 2, 0); ctx.scale(-1, 1); }
+      ctx.font = `${Math.round(gc.height * 0.074)}px serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.fillText('🦙', apx, apy - 2);
+      ctx.restore();
+    }
+
+    // ── Capy ──────────────────────────────────────────────
+    function shadeColor(hex, pct) {
+      try {
+        let r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+        r = Math.min(255, Math.max(0, r + pct)); g = Math.min(255, Math.max(0, g + pct)); b = Math.min(255, Math.max(0, b + pct));
+        return `rgb(${r},${g},${b})`;
+      } catch { return hex; }
+    }
+
+    function drawCapybara() {
+      if (capy.dead) return;
+      if (capy.invincible > 0 && Math.floor(t / 5) % 2 === 0) return;
+
+      const cx = sx(capy.x + capy.w / 2), cy = capy.y + capy.h / 2;
+      const col = CFG.CAPY_COLOR, dk = shadeColor(col, -30);
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1, capy.squishY);
+
+      // Shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.11)';
+      ctx.beginPath(); ctx.ellipse(0, capy.h / 2 + 3, 23, 6, 0, 0, Math.PI * 2); ctx.fill();
+
+      // Body
+      ctx.fillStyle = col;
+      ctx.beginPath(); ctx.ellipse(0, 3, 21, 14, 0, 0, Math.PI * 2); ctx.fill();
+
+      // Head
+      ctx.beginPath(); ctx.ellipse(18, -4, 14, 12, -0.12, 0, Math.PI * 2); ctx.fill();
+
+      // Snout
+      ctx.fillStyle = dk;
+      ctx.beginPath(); ctx.ellipse(29, -2, 7, 5.5, 0, 0, Math.PI * 2); ctx.fill();
+
+      // Nostrils
+      ctx.fillStyle = shadeColor(col, -60);
+      ctx.beginPath(); ctx.arc(31, -1, 1.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(28, -3, 1.2, 0, Math.PI * 2); ctx.fill();
+
+      // Eye
+      ctx.fillStyle = '#2a1008';
+      ctx.beginPath(); ctx.arc(21, -8, 3.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'white';
+      ctx.beginPath(); ctx.arc(20, -10, 1.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(23, -7, 0.7, 0, Math.PI * 2); ctx.fill();
+
+      // Ear
+      ctx.fillStyle = dk;
+      ctx.beginPath(); ctx.ellipse(13, -15, 5.5, 4.5, -0.4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = shadeColor(col, 15);
+      ctx.beginPath(); ctx.ellipse(13, -15, 3.5, 2.8, -0.4, 0, Math.PI * 2); ctx.fill();
+
+      // Smile
+      ctx.strokeStyle = shadeColor(col, -50); ctx.lineWidth = 2; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(29.5, 0, 4, 0.3, Math.PI - 0.3); ctx.stroke();
+
+      if (capy.happy > 0) {
+        ctx.font = '10px serif'; ctx.textAlign = 'center';
+        ctx.fillText('💗', 10, -22); capy.happy--;
+      }
+
+      // Legs
+      ctx.fillStyle = dk;
+      const swing = capy.onGround ? Math.sin(t * 0.22) * 5 : 0;
+      [[-13, 12 + swing], [-3, 13 - swing], [7, 12 + swing], [17, 13 - swing]].forEach(([lx, ly]) => {
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(lx - 3.5, ly, 7, 10, 3); else ctx.fillRect(lx - 3.5, ly, 7, 10);
+        ctx.fill();
+      });
+
+      // Tail
+      ctx.fillStyle = col;
+      ctx.beginPath(); ctx.ellipse(-20, 4, 5, 4, 0.3, 0, Math.PI * 2); ctx.fill();
+
+      ctx.restore();
+    }
+
+    // ── Particles ─────────────────────────────────────────
+    function drawParticles() {
+      particles.forEach(p => {
+        ctx.save();
+        ctx.globalAlpha = p.life / p.maxLife;
+        ctx.font = `${p.size}px serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(p.e, sx(p.wx), p.y);
+        ctx.restore();
+      });
+    }
+
+    // ── Finish flag ───────────────────────────────────────
+    function drawFinish() {
+      const fx = sx(WORLD_LEN - 180), fy = GF() - 90;
+      if (fx < -80 || fx > gc.width + 10) return;
+      ctx.fillStyle = '#8b5a3a';
+      ctx.fillRect(fx, fy, 5, 90);
+      const wave = Math.sin(t * 0.08) * 4;
+      ctx.fillStyle = '#ff8fa8';
+      ctx.beginPath();
+      ctx.moveTo(fx + 5, fy + wave); ctx.lineTo(fx + 48, fy + 16 + wave); ctx.lineTo(fx + 5, fy + 32 + wave);
+      ctx.closePath(); ctx.fill();
+      ctx.font = '14px serif'; ctx.textAlign = 'left';
+      ctx.fillText('🦫', fx - 10, fy - 12);
+      ctx.fillStyle = '#8b4a25';
+      ctx.font = `bold ${Math.round(gc.height * 0.032)}px 'Baloo 2',cursive`;
+      ctx.textAlign = 'center';
+      ctx.fillText('FINISH!', fx + 3, fy - 16);
+    }
+
+    // ── Physics ───────────────────────────────────────────
+    // Key change: Capy no longer gets a horizontal jump boost.
+    // Instead, the world scrolls at a constant SCROLL_SPEED and Capy
+    // is carried with it automatically. Jumping is purely vertical.
+    // This makes the game feel like a classic endless runner —
+    // the player only needs to think about WHEN to jump, not WHERE.
+    function updateCapy() {
+      if (capy.dead) return;
+
+      // coyote time
+      if (capy.onGround) coyoteTimer = 8;
+      else coyoteTimer--;
+
+      if (jumpBuffer > 0) jumpBuffer--;
+
+      // Gravity
+      capy.vy += CFG.GRAVITY;
+
+      // Constant horizontal scroll
+      capy.x += CFG.SCROLL_SPEED;
+
+      // Vertical movement
+      capy.y += capy.vy;
+
+      if (capy.invincible > 0) capy.invincible--;
+
+      capy.squishY += (1 - capy.squishY) * 0.14;
+
+      // Platform collisions
+      capy.onGround = false;
+      const feetY = capy.y + capy.h;
+      for (const p of world.platforms) {
+        const psy = wy(p.yF);
+        const inX = capy.x + capy.w - 4 > p.x && capy.x + 4 < p.x + p.w;
+        const prevFeet = feetY - capy.vy;
+
+        if (inX && prevFeet <= psy + 6 && feetY >= psy && capy.vy >= 0) {
+          capy.y = psy - capy.h;
+          capy.vy = 0;
+          capy.onGround = true;
+          capy.jumpsLeft = CFG.DOUBLE_JUMP ? 2 : 1;
+          capy.squishY = CFG.SQUISH_AMOUNT;
+          break;
+        }
+      }
+
+      // buffered jump trigger
+      if (jumpBuffer > 0 && (capy.jumpsLeft > 0 || coyoteTimer > 0)) {
+        capy.vy = -CFG.JUMP_FORCE;
+        capy.jumpsLeft--;
+        jumpBuffer = 0;
+        capy.squishY = 1.3;
+      }
+
+      // Fell off bottom
+      if (capy.y > gc.height + 80) loseLife();
+
+      // Left camera boundary (can't fall behind)
+      const leftBound = camX + 16;
+      if (capy.x < leftBound) { capy.x = leftBound; }
+
+      // Win check
+      if (!winFlag && capy.x > WORLD_LEN - 200) {
+        winFlag = true;
+        setTimeout(triggerWin, 600);
+      }
+    }
+
+    // Camera: Capy sits at ~28% from left so player sees MORE ahead
+    // This gives around 72% of the screen as look-ahead space —
+    // previously it was 30% (70% look-ahead). Small shift but meaningful.
+    function updateCamera() {
+      const target = capy.x - gc.width * 0.28;
+      camX += (target - camX) * CFG.CAMERA_LAG;
+      camX = Math.max(0, Math.min(camX, WORLD_LEN - gc.width));
+    }
+
+    function updateAlpacas() {
+      world.alpacas.forEach(a => {
+        a.px += CFG.ALPACA_SPEED * a.dir;
+        if (a.px > a.x + a.patrolW || a.px < a.x) a.dir *= -1;
+        if (capy.invincible === 0) {
+          const dx = Math.abs(capy.x + capy.w / 2 - a.px);
+          const dy = Math.abs(capy.y + capy.h / 2 - wy(a.yF));
+          if (dx < CFG.HIT_RADIUS && dy < CFG.HIT_RADIUS) loseLife();
+        }
+      });
+    }
+
+    function updateStickers() {
+      world.stickers.forEach(s => {
+        if (s.collected) return;
+        const dx = Math.abs(capy.x + capy.w / 2 - s.x);
+        const dy = Math.abs(capy.y + capy.h / 2 - wy(s.yF));
+        if (dx < 30 && dy < 30) {
+          s.collected = true;
+          score += CFG.STICKER_SCORE;
+          capy.happy = 40;
+          updateHUD();
+          showPop(s.x, wy(s.yF), `+${CFG.STICKER_SCORE} ${s.e}`);
+        }
+      });
+    }
+
+    function loseLife() {
+      if (capy.invincible > 0) return;
+      shake = 10; // trigger screen shake
+      lives--;
       updateHUD();
-      showPop(s.x, wy(s.yF), `+${CFG.STICKER_SCORE} ${s.e}`);
+      spawnParticles(capy.x + capy.w / 2, capy.y + capy.h / 2);
+      if (lives <= 0) {
+        capy.dead = true;
+        setTimeout(triggerDead, 700);
+      } else {
+        // Bounce up, grant invincibility frames
+        capy.vy = -7;
+        capy.invincible = 120;
+      }
     }
-  });
-}
 
-function loseLife() {
-  if (capy.invincible > 0) return;
-  lives--;
-  updateHUD();
-  spawnParticles(capy.x + capy.w/2, capy.y + capy.h/2);
-  if (lives <= 0) {
-    capy.dead = true;
-    setTimeout(triggerDead, 700);
-  } else {
-    // Bounce up, grant invincibility frames
-    capy.vy = -7;
-    capy.invincible = 120;
-  }
-}
+    function spawnParticles(wx, py) {
+      const emojis = ['💫', '✨', '🌸', '⭐', '🌼'];
+      for (let i = 0; i < 10; i++) {
+        particles.push({
+          wx: wx + (Math.random() - 0.5) * 28, y: py + (Math.random() - 0.5) * 16,
+          vx: (Math.random() - 0.5) * 3.5, vy: Math.random() * -3 - 0.5,
+          e: emojis[Math.floor(Math.random() * emojis.length)],
+          size: 14 + Math.random() * 10, life: 38, maxLife: 38,
+        });
+      }
+    }
 
-function spawnParticles(wx, py) {
-  const emojis = ['💫','✨','🌸','⭐','🌼'];
-  for (let i = 0; i < 10; i++) {
-    particles.push({
-      wx: wx + (Math.random()-0.5)*28, y: py+(Math.random()-0.5)*16,
-      vx: (Math.random()-0.5)*3.5, vy: Math.random()*-3-0.5,
-      e: emojis[Math.floor(Math.random()*emojis.length)],
-      size: 14+Math.random()*10, life: 38, maxLife: 38,
+    function updateParticles() {
+      particles.forEach(p => { p.wx += p.vx; p.y += p.vy; p.vy += 0.14; p.life--; });
+      particles = particles.filter(p => p.life > 0);
+    }
+
+    // ── Score pops ────────────────────────────────────────
+    function showPop(wx, py, text) {
+      const pops = document.getElementById('pops');
+      const scX = wrap.clientWidth / gc.width, scY = wrap.clientHeight / gc.height;
+      const div = document.createElement('div');
+      div.className = 'pop'; div.textContent = text;
+      div.style.left = (sx(wx) * scX - 28) + 'px';
+      div.style.top = (py * scY - 12) + 'px';
+      pops.appendChild(div);
+      setTimeout(() => div.remove(), 920);
+    }
+
+    // ── End screens ───────────────────────────────────────
+    function triggerWin() {
+      state = 'win';
+      const got = world.stickers.filter(s => s.collected).length;
+      document.getElementById('end-title').textContent = '🎉 You did it!';
+      document.getElementById('end-msg').innerHTML =
+        `Capy reached the finish!<br>Stickers: <strong>${got} / ${world.stickers.length}</strong><br>Score: <strong>${score}</strong> ⭐`;
+      document.getElementById('screen-end').style.display = '';
+    }
+
+    function triggerDead() {
+      state = 'dead';
+      const got = world.stickers.filter(s => s.collected).length;
+      document.getElementById('end-title').textContent = '😢 Oof!';
+      document.getElementById('end-msg').innerHTML =
+        `Capy ran out of hearts!<br>Stickers: <strong>${got} / ${world.stickers.length}</strong><br>Score: <strong>${score}</strong> ⭐`;
+      document.getElementById('screen-end').style.display = '';
+    }
+
+    // ── Init ──────────────────────────────────────────────
+    function initGame() {
+      camX = 0; score = 0; lives = CFG.LIVES; distance = 0; winFlag = false; particles = [];
+      t = 0;
+      world = buildWorld();
+      initSnow();
+      capy = {
+        x: 60, y: 0, vx: 0, vy: 0, w: 40, h: 28,
+        onGround: false, jumpsLeft: CFG.DOUBLE_JUMP ? 2 : 1,
+        squishY: 1, dead: false, invincible: 0, happy: 0,
+      };
+      capy.y = GF() - capy.h;
+      updateHUD();
+    }
+
+    // ── Input ─────────────────────────────────────────────
+    function bufferedJump() {
+      if (state !== 'play') return;
+      jumpBuffer = 6;
+    }
+
+    gc.addEventListener('click', bufferedJump);
+    gc.addEventListener('touchstart', e => { e.preventDefault(); bufferedJump(); }, { passive: false });
+    document.addEventListener('keydown', e => {
+      if (e.code === 'Space' || e.code === 'ArrowUp') {
+        e.preventDefault();
+        bufferedJump();
+      }
     });
-  }
-}
 
-function updateParticles() {
-  particles.forEach(p => { p.wx+=p.vx; p.y+=p.vy; p.vy+=0.14; p.life--; });
-  particles = particles.filter(p => p.life > 0);
-}
+    document.getElementById('btn-start').addEventListener('click', () => {
+      document.getElementById('screen-start').style.display = 'none';
+      initGame(); state = 'play';
+    });
+    document.getElementById('btn-restart').addEventListener('click', () => {
+      document.getElementById('screen-end').style.display = 'none';
+      initGame(); state = 'play';
+    });
 
-// ── Score pops ────────────────────────────────────────
-function showPop(wx, py, text) {
-  const pops = document.getElementById('pops');
-  const scX = wrap.clientWidth / gc.width, scY = wrap.clientHeight / gc.height;
-  const div = document.createElement('div');
-  div.className = 'pop'; div.textContent = text;
-  div.style.left = (sx(wx)*scX - 28) + 'px';
-  div.style.top  = (py*scY - 12) + 'px';
-  pops.appendChild(div);
-  setTimeout(() => div.remove(), 920);
-}
+    // ── Main loop ─────────────────────────────────────────
+    function frame() {
+      t++;
+      requestAnimationFrame(frame);
 
-// ── End screens ───────────────────────────────────────
-function triggerWin() {
-  state = 'win';
-  const got = world.stickers.filter(s => s.collected).length;
-  document.getElementById('end-title').textContent = '🎉 You did it!';
-  document.getElementById('end-msg').innerHTML =
-    `Capy reached the finish!<br>Stickers: <strong>${got} / ${world.stickers.length}</strong><br>Score: <strong>${score}</strong> ⭐`;
-  document.getElementById('screen-end').style.display = '';
-}
+      ctx.save();
+      ctx.clearRect(0, 0, gc.width, gc.height);
 
-function triggerDead() {
-  state = 'dead';
-  const got = world.stickers.filter(s => s.collected).length;
-  document.getElementById('end-title').textContent = '😢 Oof!';
-  document.getElementById('end-msg').innerHTML =
-    `Capy ran out of hearts!<br>Stickers: <strong>${got} / ${world.stickers.length}</strong><br>Score: <strong>${score}</strong> ⭐`;
-  document.getElementById('screen-end').style.display = '';
-}
+      applyShake(); // ← NEW
 
-// ── Init ──────────────────────────────────────────────
-function initGame() {
-  camX=0; score=0; lives=CFG.LIVES; distance=0; winFlag=false; particles=[];
-  t=0;
-  world = buildWorld();
-  initSnow();
-  capy = {
-    x:60, y:0, vx:0, vy:0, w:40, h:28,
-    onGround:false, jumpsLeft: CFG.DOUBLE_JUMP ? 2 : 1,
-    squishY:1, dead:false, invincible:0, happy:0,
-  };
-  capy.y = GF() - capy.h;
-  updateHUD();
-}
+      drawBackground();
 
-// ── Input ─────────────────────────────────────────────
-// Jump is now purely vertical — no horizontal boost.
-// The player's only input: when to jump and when to jump again.
-function doJump() {
-  if (state !== 'play') return;
-  if (capy.dead) return;
-  if (capy.jumpsLeft > 0) {
-    capy.vy = -CFG.JUMP_FORCE;
-    capy.jumpsLeft--;
-    capy.squishY = 1.30; // stretch on launch
-  }
-}
+      if (state === 'start') {
+        if (!world) { world = buildWorld(); initSnow(); }
+        world.platforms.forEach(p => { drawMountainShape(p); drawPlatform(p); });
+        world.stickers.forEach(drawSticker);
+        world.alpacas.forEach(drawAlpaca);
+        drawFinish();
+        drawSnow();
+        ctx.restore();
+        return;
+      }
 
-gc.addEventListener('click', doJump);
-gc.addEventListener('touchstart', e => { e.preventDefault(); doJump(); }, { passive:false });
-document.addEventListener('keydown', e => {
-  if (e.code==='Space'||e.code==='ArrowUp') { e.preventDefault(); doJump(); }
-});
+      world.platforms.forEach(p => drawMountainShape(p));
+      world.platforms.forEach(p => drawPlatform(p));
+      world.stickers.forEach(drawSticker);
+      world.alpacas.forEach(drawAlpaca);
+      drawFinish();
+      drawParticles();
+      drawCapybara();
+      drawSnow();
 
-document.getElementById('btn-start').addEventListener('click', () => {
-  document.getElementById('screen-start').style.display = 'none';
-  initGame(); state = 'play';
-});
-document.getElementById('btn-restart').addEventListener('click', () => {
-  document.getElementById('screen-end').style.display = 'none';
-  initGame(); state = 'play';
-});
+      if (state === 'play') {
+        updateCapy();
+        updateCamera();
+        updateAlpacas();
+        updateStickers();
+        updateParticles();
+      }
 
-// ── Main loop ─────────────────────────────────────────
-function frame() {
-  t++;
-  requestAnimationFrame(frame);
-  ctx.clearRect(0, 0, gc.width, gc.height);
+      distance = Math.max(distance, Math.round(capy.x / 20));
+      if (t % 60 === 0 && !winFlag) { score++; updateHUD(); } else updateHUD();
 
-  drawBackground();
+      ctx.restore();
+    }
 
-  if (state === 'start') {
-    if (!world) { world = buildWorld(); initSnow(); }
-    world.platforms.forEach(p => { drawMountainShape(p); drawPlatform(p); });
-    world.stickers.forEach(drawSticker);
-    world.alpacas.forEach(drawAlpaca);
-    drawFinish();
-    drawSnow();
-    return;
-  }
-
-  world.platforms.forEach(p => drawMountainShape(p));
-  world.platforms.forEach(p => drawPlatform(p));
-  world.stickers.forEach(drawSticker);
-  world.alpacas.forEach(drawAlpaca);
-  drawFinish();
-  drawParticles();
-  drawCapybara();
-  drawSnow();
-
-  if (state !== 'play') return;
-
-  updateCapy();
-  updateCamera();
-  updateAlpacas();
-  updateStickers();
-  updateParticles();
-
-  distance = Math.max(distance, Math.round(capy.x / 20));
-  if (t % 60 === 0 && !winFlag) { score++; updateHUD(); } else updateHUD();
-}
-
-world = buildWorld();
-initSnow();
-frame();
-</script>
+    world = buildWorld();
+    initSnow();
+    frame();
+  </script>
 </body>
+
 </html>
